@@ -4,15 +4,45 @@ using UnityEngine;
 
 public class Attraction : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    
+    public Rigidbody rb;
+    private float myG = 6.67f;
+    public static List<Attraction> planetAttraction;
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        foreach (var pAttraction in planetAttraction)
+        {
+            // ไม่ดูดตัวเอง
+            if (pAttraction != this)
+            {
+                Attract(pAttraction);
+            }
+        }
+
+    }//FixedUpdate
+
+    void Attract(Attraction other)
+    {
+        Rigidbody rbOther = other.rb;
+        Vector3 direction = rbOther.position - rbOther.position;
+        float distance = direction.magnitude;
+        float forceMagnitude = myG * (rb.mass * rbOther.mass) / Mathf.Pow(distance, 2);
+
+        Vector3 force = direction.normalized * forceMagnitude;
+        rbOther.AddForce(force);
+
     }
+
+    private void OnEnable()
+    {
+        if (planetAttraction == null)
+        {
+            planetAttraction = new List<Attraction>();
+        }
+
+        planetAttraction.Add(this);
+
+    }//OnEnable
 }
